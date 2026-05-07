@@ -1,3 +1,4 @@
+package oop.estacionamientogestion;
 import java.io.Serializable;
 
 public class Vehiculo implements Serializable {
