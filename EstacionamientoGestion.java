@@ -4,6 +4,8 @@
 
 package oop.estacionamientogestion;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,9 +17,126 @@ public class EstacionamientoGestion {
     public static Scanner sc = new Scanner(System.in);
     public static ArrayList<Vehiculo> vehiculosRegistrados;
     public static ArrayList<Visita> visitas = new ArrayList<>();
+
     public static void registrarVehiculo(ArrayList<Vehiculo> lista) {
-        return;
+        System.out.println("Ingrese la marca del vehiculo:");
+        String marca = sc.nextLine().trim();
+
+        System.out.println("Ingrese las placas:");
+        String placas = sc.nextLine().trim().toUpperCase();
+        if (placas.isEmpty()) {
+            System.out.println("Las placas no pueden estar vacias.");
+            return;
+        }
+
+        for (Vehiculo vehiculo : lista) {
+            if (vehiculo.getPlacas().equalsIgnoreCase(placas)) {
+                System.out.println("Ya existe un vehiculo registrado con esas placas.");
+                return;
+            }
+        }
+
+        System.out.println("Ingrese el token del vehiculo:");
+        String token = sc.nextLine().trim();
+
+        System.out.println("Ingrese el color del vehiculo:");
+        String color = sc.nextLine().trim();
+
+        int anioFabricacion;
+        while (true) {
+            System.out.println("Ingrese el anio de fabricacion:");
+            try {
+                anioFabricacion = Integer.parseInt(sc.nextLine().trim());
+                if (anioFabricacion < 1900 || anioFabricacion > LocalDateTime.now().getYear() + 1) {
+                    throw new FueraDeRangoException("Anio fuera de rango permitido.");
+                }
+                break;
+            } catch (FueraDeRangoException | NumberFormatException e) {
+                System.out.println("Anio no valido. Intente de nuevo.");
+            }
+        }
+
+        boolean esAutomatico;
+        while (true) {
+            System.out.println("Tipo de transmision ([1] Automatico, [2] Estandar):");
+            String opcion = sc.nextLine().trim();
+            if ("1".equals(opcion)) {
+                esAutomatico = true;
+                break;
+            } else if ("2".equals(opcion)) {
+                esAutomatico = false;
+                break;
+            } else {
+                System.out.println("Opcion no valida.");
+            }
+        }
+
+        Motor motor = new Motor(esAutomatico);
+        Vehiculo nuevoVehiculo = new Vehiculo(motor, marca, placas, token, color, anioFabricacion);
+        lista.add(nuevoVehiculo);
+        System.out.println("Vehiculo registrado correctamente.");
     }
+
+    public static void mostrarVehiculos(ArrayList<Vehiculo> lista) {
+        if (lista.isEmpty()) {
+            System.out.println("No hay vehiculos registrados.");
+            return;
+        }
+
+        System.out.println("Vehiculos registrados:");
+        for (Vehiculo vehiculo : lista) {
+            System.out.println("-----------------------------------");
+            System.out.println("Marca: " + vehiculo.getMarca());
+            System.out.println("Placas: " + vehiculo.getPlacas());
+            System.out.println("Token: " + vehiculo.getToken());
+            System.out.println("Color: " + vehiculo.getColor());
+            System.out.println("Anio: " + vehiculo.getAnioFabricacion());
+        }
+    }
+
+    public static void registrarEntrada(ArrayList<Visita> listaVisitas, ArrayList<Vehiculo> listaVehiculos) {
+        if (listaVehiculos.isEmpty()) {
+            System.out.println("No hay vehiculos registrados para registrar acceso.");
+            return;
+        }
+
+        System.out.println("Ingrese las placas del vehiculo que entra:");
+        String placas = sc.nextLine().trim();
+        Vehiculo vehiculoEncontrado = null;
+
+        for (Vehiculo vehiculo : listaVehiculos) {
+            if (vehiculo.getPlacas().equalsIgnoreCase(placas)) {
+                vehiculoEncontrado = vehiculo;
+                break;
+            }
+        }
+
+        if (vehiculoEncontrado == null) {
+            System.out.println("Vehiculo no encontrado. Registrelo primero.");
+            return;
+        }
+
+        Visita nuevaVisita = new Visita(vehiculoEncontrado, LocalDateTime.now());
+        listaVisitas.add(nuevaVisita);
+        System.out.println("Entrada registrada para " + vehiculoEncontrado.getPlacas() + ".");
+    }
+
+    public static void mostrarHistorial(ArrayList<Visita> listaVisitas) {
+        if (listaVisitas.isEmpty()) {
+            System.out.println("No hay accesos registrados.");
+            return;
+        }
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        System.out.println("Historial de accesos:");
+        for (Visita visita : listaVisitas) {
+            System.out.println("-----------------------------------");
+            System.out.println("Placas: " + visita.getVehiculo().getPlacas());
+            System.out.println("Marca: " + visita.getVehiculo().getMarca());
+            System.out.println("Fecha y hora: " + visita.getFechaYHora().format(formato));
+        }
+    }
+
     public static void main(String[] args) {
         //rutas de los archivos para serializacion
         String rutaVehiculos = "inventario.dat";
@@ -60,16 +179,16 @@ public class EstacionamientoGestion {
             // **OPCIONES DEL MENU PRINCIPAL** //
             switch(opcion) {
                 case 1:
-                    //registrarVehiculo(vehiculosRegistrados);
+                    registrarVehiculo(vehiculosRegistrados);
                     break;
                 case 2:
-                    //mostrarVehiculos(vehiculosRegistrados);
+                    mostrarVehiculos(vehiculosRegistrados);
                     break;
                 case 3:
-                    //registrarEntrada(visitas, vehiculosRegistrados);
+                    registrarEntrada(visitas, vehiculosRegistrados);
                     break;
                 case 4:
-                    //mostrarHistorial(visitas);
+                    mostrarHistorial(visitas);
                     break;
                 case 5:
                     System.out.println("Guardando datos...");

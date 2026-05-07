@@ -69,5 +69,15 @@ public class Vehiculo implements Serializable {
         this.anioFabricacion = anioFabricacion;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Vehiculo{" +
+                "marca='" + marca + '\'' +
+                ", placas='" + placas + '\'' +
+                ", color='" + color + '\'' +
+                ", anioFabricacion=" + anioFabricacion +
+                ", token='" + token + '\'' +
+                ", motor=" + motor +
+                '}';
+    }
 }

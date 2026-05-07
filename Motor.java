@@ -11,4 +11,11 @@ public class Motor implements Serializable {
     public void acelerar() {
         System.out.println("El motor está acelerando.");
     }
+
+    @Override
+    public String toString() {
+        return "Motor{" +
+                "esAutomatico=" + esAutomatico +
+                '}';
+    }
 }
