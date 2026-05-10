@@ -9,5 +9,8 @@ public class Moto extends Vehiculo implements Serializable {
         super(motor, marca, placas, color, anioFabricacion);
         this.sidecar = sidecar;
     }
-    
+
+    public boolean tieneSidecar() {
+        return sidecar;
+    }
 }

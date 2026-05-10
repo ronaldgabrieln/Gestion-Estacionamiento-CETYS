@@ -87,9 +87,69 @@ public class EstacionamientoGestion {
             }
         }
 
+        boolean esCarro;
+        while (true) {
+            try {
+                System.out.println("Tipo de vehiculo ([1] Carro, [2] Moto):");
+                int tipoVehiculo = sc.nextInt();
+                if (tipoVehiculo < 1 || tipoVehiculo > 2) {
+                    throw new IllegalArgumentException("Opcion no valida.");
+                }
+                esCarro = tipoVehiculo == 1;
+                sc.nextLine();
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                sc.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Opcion no valida.");
+                sc.nextLine();
+            }
+        }
+
         Motor motor = new Motor(esAutomatico);
-        Vehiculo nuevoVehiculo = new Vehiculo(motor, marca, placas, color, anioFabricacion);
-        lista.add(nuevoVehiculo);
+        if (esCarro) {
+            int puertas;
+            while (true) {
+                try {
+                    System.out.println("Numero de puertas:");
+                    puertas = sc.nextInt();
+                    if (puertas < 2 || puertas > 5) {
+                        throw new IllegalArgumentException("Use un numero de puertas entre 2 y 5.");
+                    }
+                    sc.nextLine();
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    sc.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Valor no valido. Intente de nuevo.");
+                    sc.nextLine();
+                }
+            }
+            lista.add(new Carro(motor, marca, placas, color, anioFabricacion, puertas));
+        } else {
+            boolean sidecar;
+            while (true) {
+                try {
+                    System.out.println("Tiene sidecar? ([1] Si, [2] No):");
+                    int opcionSidecar = sc.nextInt();
+                    if (opcionSidecar < 1 || opcionSidecar > 2) {
+                        throw new IllegalArgumentException("Opcion no valida.");
+                    }
+                    sidecar = opcionSidecar == 1;
+                    sc.nextLine();
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    sc.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Opcion no valida.");
+                    sc.nextLine();
+                }
+            }
+            lista.add(new Moto(motor, marca, placas, color, anioFabricacion, sidecar));
+        }
         System.out.println("Vehiculo registrado correctamente.");
     }
 
@@ -107,6 +167,15 @@ public class EstacionamientoGestion {
             System.out.println("Token: " + vehiculo.getToken());
             System.out.println("Color: " + vehiculo.getColor());
             System.out.println("Anio: " + vehiculo.getAnioFabricacion());
+            if (vehiculo instanceof Carro) {
+                Carro carro = (Carro) vehiculo;
+                System.out.println("Tipo: Carro");
+                System.out.println("Puertas: " + carro.getPuertas());
+            } else if (vehiculo instanceof Moto) {
+                Moto moto = (Moto) vehiculo;
+                System.out.println("Tipo: Moto");
+                System.out.println("Sidecar: " + (moto.tieneSidecar() ? "Si" : "No"));
+            }
         }
     }
 

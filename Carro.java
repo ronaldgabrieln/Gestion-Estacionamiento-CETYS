@@ -10,4 +10,8 @@ public class Carro extends Vehiculo implements Serializable {
         super(motor, marca, placas, color, anioFabricacion);
         this.puertas = puertas;
     }
+
+    public int getPuertas() {
+        return puertas;
+    }
 }
