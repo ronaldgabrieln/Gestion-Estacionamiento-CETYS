@@ -33,6 +33,7 @@ public class administrarSerializacion {
         try (ObjectInputStream lectorObjetos = new ObjectInputStream(new FileInputStream(nombreArchivo))) {
 
             ArrayList<Vehiculo> listaRecuperada = (ArrayList<Vehiculo>) lectorObjetos.readObject();
+            Vehiculo.asignarTokensTemporales(listaRecuperada);
             System.out.println("La lista de " + listaRecuperada.size() + "vehiculos recuperada de " + nombreArchivo);
             return listaRecuperada;
 
@@ -62,6 +63,11 @@ public class administrarSerializacion {
         try (ObjectInputStream lectorObjetos = new ObjectInputStream(new FileInputStream(nombreArchivo))) {
 
             ArrayList<Visita> listaRecuperadaVisita = (ArrayList<Visita>) lectorObjetos.readObject();
+            for (Visita visita : listaRecuperadaVisita) {
+                if (visita.getVehiculo() != null) {
+                    visita.getVehiculo().asignarTokenTemporal();
+                }
+            }
             System.out.println("El historial con " + listaRecuperadaVisita.size() + " vehculos fue recuperada en " + nombreArchivo);
             return listaRecuperadaVisita;
 

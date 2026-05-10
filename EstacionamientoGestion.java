@@ -7,6 +7,7 @@ package oop.estacionamientogestion;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -21,12 +22,15 @@ public class EstacionamientoGestion {
     public static void registrarVehiculo(ArrayList<Vehiculo> lista) {
         System.out.println("Ingrese la marca del vehiculo:");
         String marca = sc.nextLine().trim();
-
+        while(marca.isEmpty()) {
+            System.out.println("La marca no puede estar vacio.");
+            marca = sc.nextLine().trim();
+        }
         System.out.println("Ingrese las placas:");
         String placas = sc.nextLine().trim().toUpperCase();
-        if (placas.isEmpty()) {
+        while(placas.isEmpty()) {
             System.out.println("Las placas no pueden estar vacias.");
-            return;
+            placas = sc.nextLine().trim().toUpperCase();
         }
 
         for (Vehiculo vehiculo : lista) {
@@ -36,43 +40,55 @@ public class EstacionamientoGestion {
             }
         }
 
-        System.out.println("Ingrese el token del vehiculo:");
-        String token = sc.nextLine().trim();
-
         System.out.println("Ingrese el color del vehiculo:");
-        String color = sc.nextLine().trim();
+        String color = sc.nextLine();
+        while(color.isEmpty()) {
+            System.out.println("El color no puede estar vacio.");
+            color = sc.nextLine();
+        }
 
         int anioFabricacion;
         while (true) {
-            System.out.println("Ingrese el anio de fabricacion:");
             try {
-                anioFabricacion = Integer.parseInt(sc.nextLine().trim());
-                if (anioFabricacion < 1900 || anioFabricacion > LocalDateTime.now().getYear() + 1) {
-                    throw new FueraDeRangoException("Anio fuera de rango permitido.");
+                System.out.println("Ingrese el anio de fabricacion:");
+                anioFabricacion = sc.nextInt();
+                int anioMaximo = 2026;
+                if (anioFabricacion < 1900 || anioFabricacion > anioMaximo) {
+                    throw new IllegalArgumentException("Anio fuera de rango permitido.");
                 }
+                sc.nextLine();
                 break;
-            } catch (FueraDeRangoException | NumberFormatException e) {
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                sc.nextLine();
+            } catch (InputMismatchException e) {
                 System.out.println("Anio no valido. Intente de nuevo.");
+                sc.nextLine();
             }
         }
 
         boolean esAutomatico;
         while (true) {
-            System.out.println("Tipo de transmision ([1] Automatico, [2] Estandar):");
-            String opcion = sc.nextLine().trim();
-            if ("1".equals(opcion)) {
-                esAutomatico = true;
+            try {
+                System.out.println("Tipo de transmision ([1] Automatico, [2] Estandar):");
+                int opcionTransmision = sc.nextInt();
+                if (opcionTransmision < 1 || opcionTransmision > 2) {
+                    throw new IllegalArgumentException("Opcion no valida.");
+                }
+                esAutomatico = opcionTransmision == 1; //si es 1, es automatico, si es 2, es estandar por eso se puede hacer una comparacion de booleano bien sigma
+                sc.nextLine();
                 break;
-            } else if ("2".equals(opcion)) {
-                esAutomatico = false;
-                break;
-            } else {
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                sc.nextLine();
+            } catch (InputMismatchException e) {
                 System.out.println("Opcion no valida.");
+                sc.nextLine();
             }
         }
 
         Motor motor = new Motor(esAutomatico);
-        Vehiculo nuevoVehiculo = new Vehiculo(motor, marca, placas, token, color, anioFabricacion);
+        Vehiculo nuevoVehiculo = new Vehiculo(motor, marca, placas, color, anioFabricacion);
         lista.add(nuevoVehiculo);
         System.out.println("Vehiculo registrado correctamente.");
     }
@@ -101,11 +117,15 @@ public class EstacionamientoGestion {
         }
 
         System.out.println("Ingrese las placas del vehiculo que entra:");
-        String placas = sc.nextLine().trim();
+        String placas = sc.nextLine();
+        while(placas.isEmpty()) {
+            System.out.println("Las placas no pueden estar vacias.");
+            placas = sc.nextLine();
+        }
         Vehiculo vehiculoEncontrado = null;
 
         for (Vehiculo vehiculo : listaVehiculos) {
-            if (vehiculo.getPlacas().equalsIgnoreCase(placas)) {
+            if (vehiculo.getPlacas().equalsIgnoreCase(placas)) {//por si el usuario ingresa placas pero con mayusculas o minusculas diferentes
                 vehiculoEncontrado = vehiculo;
                 break;
             }
@@ -129,7 +149,7 @@ public class EstacionamientoGestion {
 
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         System.out.println("Historial de accesos:");
-        for (Visita visita : listaVisitas) {
+        for (Visita visita : listaVisitas) { // mostrar cada visita en listaVisitas
             System.out.println("-----------------------------------");
             System.out.println("Placas: " + visita.getVehiculo().getPlacas());
             System.out.println("Marca: " + visita.getVehiculo().getMarca());
@@ -161,21 +181,23 @@ public class EstacionamientoGestion {
             System.out.println("[3] Registrar la entrada de un vehículo");
             System.out.println("[4] Mostrar historial de acceso");
             System.out.println("[5] Salir y guardar");
-            int opcion = 0;
+            int opcion;
             while (true) {
                 try {
                     opcion = sc.nextInt();
                     if (opcion < 1 || opcion > 5) {
-                        throw new FueraDeRangoException("Opción fuera de rango. Por favor, ingrese un número entre 1 y 5.");
-                    } else {
-                        break; // salir del bucle
+                        throw new IllegalArgumentException("Fuera de rango. Por favor, ingrese un número entre 1 y 5.");
                     }
-                } catch (Exception e) {
-                    System.out.println("Entrada no válida. Por favor, ingrese un número dentro del rango permitido.");
-                    sc.nextLine(); // Limpiar el buffer de entrada
+                    sc.nextLine();
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.println(e.getMessage());
+                    sc.nextLine();
+                } catch (InputMismatchException e) {
+                    System.out.println("Entrada no válida. Por favor, ingrese un número entre 1 y 5.");
+                    sc.nextLine();
                 }
             }
-            sc.nextLine(); // Limpiar el buffer de entrada después de leer el número
             // **OPCIONES DEL MENU PRINCIPAL** //
             switch(opcion) {
                 case 1:
