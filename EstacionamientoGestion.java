@@ -228,17 +228,19 @@ public class EstacionamientoGestion {
 
     public static void main(String[] args) {
         //rutas de los archivos para serializacion
-        String rutaVehiculos = "inventario.dat";
-        String rutaVisitas = "accesos_diarios.txt";
+        String rutaVehiculos = "vehiculos.dat";
+        String rutaVisitas = "visitas.txt";
         // Cargar datos existentes
         vehiculosRegistrados = administrarSerializacion.leerObjetos(rutaVehiculos);
         if (vehiculosRegistrados == null) {
             vehiculosRegistrados = new ArrayList<>();
+            administrarSerializacion.guardarObjetos(vehiculosRegistrados, rutaVehiculos);
         }
         
         visitas = administrarSerializacion.leerObjetosVisita(rutaVisitas);
         if (visitas == null) {
             visitas = new ArrayList<>();
+            administrarSerializacion.guardarObjetosVisita(visitas, rutaVisitas);
         }
         // Menu principal
         System.out.println("Bienvenido al sistema de gestión de estacionamiento CETYS");

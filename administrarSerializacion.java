@@ -38,7 +38,7 @@ public class administrarSerializacion {
             return listaRecuperada;
 
         } catch (IOException e){
-            System.err.println("Error al leer el archivo: " + e.getMessage());
+            guardarObjetos(new ArrayList<Vehiculo>(), nombreArchivo);
 
         } catch (ClassNotFoundException e) {
             System.err.println("La clase del objeto no fue encontrado: " + e.getMessage());
@@ -68,11 +68,11 @@ public class administrarSerializacion {
                     visita.getVehiculo().asignarTokenTemporal();
                 }
             }
-            System.out.println("El historial con " + listaRecuperadaVisita.size() + " vehculos fue recuperada en " + nombreArchivo);
+            System.out.println("El historial con " + listaRecuperadaVisita.size() + " vehiculos fue recuperada en " + nombreArchivo);
             return listaRecuperadaVisita;
 
         } catch (IOException e){
-            System.err.println("Error al leer el archivo: " + e.getMessage());
+            guardarObjetosVisita(new ArrayList<Visita>(), nombreArchivo);
 
         } catch (ClassNotFoundException e) {
             System.err.println("La clase del objeto no fue encontrado: " + e.getMessage());
